@@ -1,13 +1,12 @@
 # Vos import ici
 import csv
 import doctest
-from collections import defaultdict
 
 # le path du fichier de données
 FILENAME = "population.csv"
 
 
-def read_file(filename):
+def read_file(filename: str) -> list[dict[str, str]]:
     """retourne les données sous la forme d'une liste de dictionnaires
 
     Args:
@@ -67,7 +66,9 @@ def read_file(filename):
 
 
 
-def build_list_departements(data):
+def build_list_departements(
+    data: list[dict[str, str]],
+) -> list[tuple[str, str]]:
     """retourne la liste ordonnée des départements contenus dans les données
 
     Args:
@@ -130,7 +131,9 @@ def build_list_departements(data):
     return l
 
 
-def build_list_communes(data):
+def build_list_communes(
+    data: list[dict[str, str]],
+) -> list[tuple[str, str]]:
     """retourne la liste des tuples (code, commune)
 
     Args:
@@ -191,7 +194,10 @@ def build_list_communes(data):
     return l
 
 
-def get_pop_commune(data, code):
+def get_pop_commune(
+    data: list[dict[str, str]],
+    code: str,
+) -> tuple[str, int, str] | None:
     """retourne la population totale d'une commune pour l'année de recensement la plus récente
 
     Args:
@@ -224,7 +230,7 @@ def get_pop_commune(data, code):
     
     """
     # votre code ici
-    t = None
+    t: tuple[str, int, str] | None = None
     annee_plus_recente = ""
 
     for ligne in data:
@@ -241,13 +247,9 @@ def get_pop_commune(data, code):
     return t
 
 
-def multi_dict(K, type):
-    if K == 1:
-        return defaultdict(type)
-    else:
-        return defaultdict(lambda: multi_dict(K-1, type))
-
-def build_dict_departements(data):
+def build_dict_departements(
+    data: list[dict[str, str]],
+) -> dict[str, tuple[int, int]]:
     """Retourne un dictionnaire dont la clé est le département, et la valeur une liste [nombre de communes, population totale]
     
     Args:
@@ -272,7 +274,7 @@ def build_dict_departements(data):
     (264, 346208)
     """
     # votre code ici
-    communes = {}
+    communes: dict[tuple[str, str], dict[str, str]] = {}
 
     for ligne in data:
         code = ligne["Code Officiel Commune / Arrondissement Municipal"]
@@ -285,7 +287,7 @@ def build_dict_departements(data):
         elif annee > communes[cle]["Année de recensement"]:
             communes[cle] = ligne
 
-    d = {}
+    d: dict[str, tuple[int, int]] = {}
 
     for ligne in communes.values():
         departement = ligne["Code Officiel Département"]
@@ -296,9 +298,9 @@ def build_dict_departements(data):
 
     return d
 
-    
-    
-def stat_by_dpt(dd, dpt):
+
+
+def stat_by_dpt(dd: dict[str, tuple[int, int]], dpt: str) -> tuple[int, int] | tuple[None, None]:
     """Retourne un tuple (nombre de communes, population totale)
 
     Args :
@@ -341,9 +343,11 @@ def stat_by_dpt(dd, dpt):
 
     """
     # votre code ici
-    return dd.get(dpt, (None, None))
+    if dpt in dd:
+        return dd[dpt]
+    return (None, None)
 
-def main():
+def main() -> None:
     # votre code de test ici
     # le code ci dessous est exécuté avec la commande :
     #   python population.py
